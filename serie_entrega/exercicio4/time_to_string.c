@@ -4,10 +4,10 @@
 #include <stdarg.h>
 
 size_t mini_snprintf(char *buffer, size_t buffer_size, const char *format, ...);
+void format_with_leading_zero(int value, char *str);
 
-// Função para converter o tempo em string no formato "ww, dd-mm-yyyy, hh:mm:ss"
 size_t time_to_string(struct tm *tm, char *buffer, size_t buffer_size) {
-    // Arrays para os dias da semana e meses
+    // Array de stings para os dias da semana
     const char *weekdays[] = {
         "domingo", "segunda-feira", "terça-feira", "quarta-feira",
         "quinta-feira", "sexta-feira", "sábado"
@@ -20,9 +20,20 @@ size_t time_to_string(struct tm *tm, char *buffer, size_t buffer_size) {
 
     // Formatar a string com o formato "ww, dd-mm-yyyy, hh:mm:ss"
     int year = tm->tm_year + 1900; // tm_year é o número de anos desde 1900
-    size_t result = snprintf(buffer, buffer_size, "%s, %02d-%02d-%04d, %02d:%02d:%02d",
-                             weekdays[tm->tm_wday], tm->tm_mday, tm->tm_mon + 1, year,
-                             tm->tm_hour, tm->tm_min, tm->tm_sec);
+    char day_str[3], month_str[3], hour_str[3], min_str[3], sec_str[3];
+    
+    // Formata cada parte usando a função format_with_leading_zero
+    format_with_leading_zero(tm->tm_mday, day_str);
+    format_with_leading_zero(tm->tm_mon + 1, month_str);
+    format_with_leading_zero(tm->tm_hour, hour_str);
+    format_with_leading_zero(tm->tm_min, min_str);
+    format_with_leading_zero(tm->tm_sec, sec_str);
+
+    // Chamada para mini_snprintf com as strings já formatadas
+    size_t result = mini_snprintf(buffer, buffer_size, "%s, %s-%s-%d, %s:%s:%s",
+                                    weekdays[tm->tm_wday], day_str, month_str, year,
+                                    hour_str, min_str, sec_str);
+
 
     // Verificar se o buffer é suficiente
     if (result >= buffer_size) {

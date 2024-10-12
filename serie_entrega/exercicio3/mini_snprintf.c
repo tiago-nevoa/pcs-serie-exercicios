@@ -30,6 +30,9 @@ size_t mini_snprintf(char *buffer, size_t buffer_size, const char *format, ...) 
 
     buffer[buffer_pos] = '\0'; // Garantir que o buffer é terminado com nulo
     va_end(arguments);
+    if (format[i] != '\0') {
+        return 0; // Buffer insuficiente
+    }
     return counter;
 }
 
